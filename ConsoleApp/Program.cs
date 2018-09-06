@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using static System.Console;
 
 namespace ConsoleApp
 {
@@ -16,21 +17,20 @@ namespace ConsoleApp
 
             var user = new Member {Username = "Sam", Password = "1234"};
 
-            var member = members
-                .FirstOrDefault(x => x.Username == user.Username && x.Password == user.Password);
+            members
+                .Where(IsMember(user))
+                .DefaultIfEmpty(DefaultMember())
+                .Select(ToFormat)
+                .ToList()
+                .ForEach(WriteLine);
 
-            string result;
-            
-            if (member != null)
-            {
-                result = member.Username;
-            }
-            else
-            {
-                result = "";
-            }
-            
-            Console.WriteLine($"Welcome {result}");
+            Func<Member, bool> IsMember(Member member)
+                => x => x.Username == member.Username && x.Password == member.Password;
+
+            Member DefaultMember()
+                => new Member {Username = string.Empty, Password = string.Empty};
+
+            string ToFormat(Member x) => $"Welcome : {x.Username}";
         }
     }
 }
